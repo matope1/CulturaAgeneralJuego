@@ -1,10 +1,10 @@
 # Cultura Brava · publicar y configurar el modo online
 
-La app mantiene el juego local. El modo online usa Supabase Auth anónimo, PostgreSQL RPC y Realtime. No necesita claves privadas en el navegador; la única clave utilizada es la publicable `anon` (o `publishable`).
+La app mantiene el juego local. El modo online usa Supabase Auth anónimo, PostgreSQL RPC y Realtime. No necesita claves privadas en el navegador; se recomienda la clave publicable `publishable`.
 
 ## 1. Crear Supabase
 
-1. Crea un proyecto en [supabase.com/dashboard](https://supabase.com/dashboard) y guarda la URL del proyecto y su clave publicable.
+1. Crea un proyecto en [supabase.com/dashboard](https://supabase.com/dashboard) y guarda la URL del proyecto y su clave publicable. En **Settings → API Keys** encontrarás la clave `sb_publishable_…`; también puedes verla en **Connect**.
 2. En **Authentication → Sign In / Providers**, habilita **Anonymous sign-ins**. Cada navegador recibe una identidad anónima persistente; borrar los datos del navegador elimina la posibilidad de recuperar esa identidad.
 3. Abre **SQL Editor** y ejecuta primero `supabase/migrations/0001_online_rooms.sql`.
 4. Ejecuta después todo el contenido de `supabase/seed_questions.sql` para cargar las 400 preguntas activas.
@@ -26,7 +26,7 @@ En el entorno de desarrollo de Vercel, configura `SUPABASE_URL` y `SUPABASE_ANON
 
 1. Crea un repositorio GitHub y sube el proyecto, incluidos `supabase/`, `api/`, `online.js`, `README-ONLINE.md` y `questions.js`.
 2. En Vercel elige **Add New → Project**, importa ese repositorio y deja el framework en **Other**. Es una app HTML/JS estática con una función Node en `api/config.js`; Vercel sirve el resto de archivos directamente.
-3. En **Project Settings → Environment Variables**, añade `SUPABASE_URL` y `SUPABASE_ANON_KEY` para Production, Preview y Development según corresponda. Usa la URL `https://…supabase.co` y la clave `anon`/`publishable` del proyecto.
+3. En **Project Settings → Environment Variables**, añade `SUPABASE_URL` y `SUPABASE_PUBLISHABLE_KEY` para Production, Preview y Development según corresponda. Usa la URL `https://…supabase.co` y la clave `sb_publishable_…`. El endpoint también acepta la variable antigua `SUPABASE_ANON_KEY`.
 4. Pulsa **Deploy**. Cada push a la rama conectada vuelve a desplegar. La aplicación y Supabase se conectan por HTTPS/WSS.
 5. Abre el dominio de Vercel en dos navegadores o teléfonos, crea una sala en uno, comparte el código, únete desde el otro y marca ambos como listos.
 
