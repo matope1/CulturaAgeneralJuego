@@ -2,7 +2,7 @@
 
 La app mantiene el juego local. El modo online usa Supabase Auth anónimo, PostgreSQL RPC y Realtime. No necesita claves privadas en el navegador; se recomienda la clave publicable `publishable`.
 
-## 1. Crear Supabase
+## 1. Crear Supabase.
 
 1. Crea un proyecto en [supabase.com/dashboard](https://supabase.com/dashboard) y guarda la URL del proyecto y su clave publicable. En **Settings → API Keys** encontrarás la clave `sb_publishable_…`; también puedes verla en **Connect**.
 2. En **Authentication → Sign In / Providers**, habilita **Anonymous sign-ins**. Cada navegador recibe una identidad anónima persistente; borrar los datos del navegador elimina la posibilidad de recuperar esa identidad.
