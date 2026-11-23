@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#10110e" />
+  <meta name="description" content="Cultura Brava: cultura general para jugar con amigos." />
+  <title>Cultura Brava — Que empiece el pique</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <header class="topbar"><a class="brand" href="#" aria-label="Cultura Brava, inicio"><span class="brand-mark">CB</span><span>CULTURA<br><b>BRAVA</b></span></a><div class="top-right"><span class="live-dot"></span><span>EL SABER PICA</span><button class="icon-btn" id="helpBtn" aria-label="Instrucciones">?</button></div></header>
+  <main id="app" class="shell"></main>
+  <dialog id="helpDialog"><div class="dialog-head"><span class="eyebrow">GUÍA RÁPIDA</span><button class="icon-btn" id="closeHelp" aria-label="Cerrar">×</button></div><h2>Reglas de la casa.</h2><p>En local, montad el móvil entre todos: cada jugador responde en secreto por turnos. Online, cada quien juega desde su dispositivo dentro de una sala.</p><p><b>A ojo:</b> gana el punto quien más se acerque a la cifra. <b>El sabiondo:</b> cada respuesta correcta suma un punto.</p><p>La partida local se guarda en este dispositivo. Las salas online se recuperan al reconectar.</p></dialog>
+  <script src="questions.js"></script><script src="app.js"></script>
+</body>
+</html>
