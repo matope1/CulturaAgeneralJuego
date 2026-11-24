@@ -8,9 +8,10 @@ La app mantiene el juego local. El modo online usa Supabase Auth anónimo, Postg
 2. En **Authentication → Sign In / Providers**, habilita **Anonymous sign-ins**. Cada navegador recibe una identidad anónima persistente; borrar los datos del navegador elimina la posibilidad de recuperar esa identidad.
 3. Abre **SQL Editor** y ejecuta primero `supabase/migrations/0001_online_rooms.sql`.
 4. Ejecuta después todo el contenido de `supabase/seed_questions.sql` para cargar las 400 preguntas activas.
-5. En **Authentication → Rate Limits**, configura límites razonables para el alta anónima. Para una publicación pública con tráfico, habilita CAPTCHA en Supabase y añade su validación en `getClient()` antes de permitir el alta.
+5. Ejecuta `supabase/migrations/0002_question_rotation.sql` para activar el histórico y la bolsa compartida del modo online. Esta migración importa también las preguntas de partidas previas que sigan registradas.
+6. En **Authentication → Rate Limits**, configura límites razonables para el alta anónima. Para una publicación pública con tráfico, habilita CAPTCHA en Supabase y añade su validación en `getClient()` antes de permitir el alta.
 
-El SQL habilita RLS; los clientes no pueden escribir puntuaciones ni leer respuestas privadas. Las salas, la selección de preguntas, las respuestas y el cálculo de puntos se controlan mediante funciones PostgreSQL transaccionales. Realtime publica solo estado de sala, participantes y el indicador de quién ha respondido.
+El SQL habilita RLS; los clientes no pueden escribir puntuaciones ni leer respuestas privadas. Las salas, la selección de preguntas, las respuestas y el cálculo de puntos se controlan mediante funciones PostgreSQL transaccionales. Realtime publica solo estado de sala, participantes y el indicador de quién ha respondido. El botón de rotación compartida muestra métricas globales; reiniciarla desde la sala de espera afecta a todas las salas online de ese modo.
 
 ## 2. Ejecutar en desarrollo
 
@@ -29,6 +30,12 @@ En el entorno de desarrollo de Vercel, configura `SUPABASE_URL` y `SUPABASE_ANON
 3. En **Project Settings → Environment Variables**, añade `SUPABASE_URL` y `SUPABASE_PUBLISHABLE_KEY` para Production, Preview y Development según corresponda. Usa la URL `https://…supabase.co` y la clave `sb_publishable_…`. El endpoint también acepta la variable antigua `SUPABASE_ANON_KEY`.
 4. Pulsa **Deploy**. Cada push a la rama conectada vuelve a desplegar. La aplicación y Supabase se conectan por HTTPS/WSS.
 5. Abre el dominio de Vercel en dos navegadores o teléfonos, crea una sala en uno, comparte el código, únete desde el otro y marca ambos como listos.
+
+## Rotación y comprobación
+
+- El modo local guarda la bolsa, las últimas 100 partidas, repeticiones y ciclos en `localStorage`. En la configuración local puedes abrir **Historial** o **Reiniciar rotación**.
+- Para validar localmente la selección persistente, ejecuta `node scripts/test-question-rotation.js`. Simula 20 partidas de 10 por modo, reinicia el contexto entre partidas y también prueba duraciones mezcladas, migración del último guardado y reinicio.
+- El modo online guarda la rotación compartida en Supabase. La estadística aparece en la sala de espera; el anfitrión puede reiniciar el ciclo del modo de su sala, afectando a todas las salas online de ese modo.
 
 ## Límites que conviene conocer
 

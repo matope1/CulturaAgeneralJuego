@@ -24,11 +24,20 @@
   function drawSetup(){
     const existing=game&&!game.finished;
     app.innerHTML=`<section class="setup fade-in"><div class="setup-top"><button class="back" id="backHome">← Inicio</button><span class="eyebrow">CONFIGURA EN 20 SEGUNDOS</span></div><h1>La cuadrilla.</h1><p class="explanation">De 2 a 4 jugadores. Pasad el móvil por turnos.</p><label class="field-label">JUGADORES</label><div class="players">${config.players.map((v,i)=>`<div class="player-wrap" style="--pc:${COLORS[i]}"><input class="player-input" data-player="${i}" maxlength="18" placeholder="${i<2?'Jugador '+(i+1):'Añadir jugador…'}" value="${escapeHtml(v)}" aria-label="Nombre del jugador ${i+1}" /></div>`).join('')}</div><label class="field-label">NÚMERO DE PREGUNTAS</label><div class="segmented" data-setting="count">${[10,30,50].map(n=>`<button data-value="${n}" class="${config.count===n?'selected':''}">${n} preguntas</button>`).join('')}</div><label class="field-label">DIFICULTAD</label><div class="segmented" data-setting="difficulty">${[['mixed','Mixta ✦'],['easy','Fácil'],['normal','Normal'],['difficult','Difícil'],['expert','Experta']].map(([v,l])=>`<button data-value="${v}" class="${config.difficulty===v?'selected':''}">${l}</button>`).join('')}</div><label class="field-label">MODO</label><div class="mode-grid"><button class="mode-choice ${config.mode==='mc'?'selected':''}" data-mode="mc"><b>El sabiondo ↗</b><small>Opción múltiple. Cada acierto suma.</small></button><button class="mode-choice ${config.mode==='ojo'?'selected':''}" data-mode="ojo"><b>A ojo ↗</b><small>Cifras, intuición y el más cercano gana.</small></button></div>${notice?`<p class="explanation" style="color:var(--red)">${escapeHtml(notice)}</p>`:''}<div class="setup-bottom"><span class="muted">${existing?'Empezar otra partida reemplazará la guardada.':''}</span><button class="primary" id="startGame">Que empiece el juego ↗</button></div></section>`;
+    const rotation=window.BravaRotation.stats(BANK),modeRotation=rotation.byMode[config.mode];
+    document.querySelector('.setup-bottom').insertAdjacentHTML('beforebegin',`<div class="rotation-tools"><span>Memoria ${config.mode==='ojo'?'A OJO':'EL SABIONDO'}: ${modeRotation.availableThisCycle}/${modeRotation.total} disponibles en este ciclo</span><div><button id="rotationStats" class="secondary">Historial</button> <button id="resetRotation" class="secondary">Reiniciar rotación</button></div></div>`);
     document.querySelector('#backHome').onclick=home;
     document.querySelectorAll('[data-player]').forEach(el=>el.oninput=()=>config.players[+el.dataset.player]=el.value);
     document.querySelectorAll('[data-setting] button').forEach(el=>el.onclick=()=>{const k=el.parentElement.dataset.setting;config[k]=k==='count'?+el.dataset.value:el.dataset.value;drawSetup()});
     document.querySelectorAll('[data-mode]').forEach(el=>el.onclick=()=>{config.mode=el.dataset.mode;drawSetup()});
     document.querySelector('#startGame').onclick=start;
+    document.querySelector('#rotationStats').onclick=showRotationStats;
+    document.querySelector('#resetRotation').onclick=()=>{if(confirm('¿Borrar la memoria de preguntas usadas en este dispositivo?')){window.BravaRotation.reset();drawSetup()}};
+  }
+  function showRotationStats(){
+    const stats=window.BravaRotation.stats(BANK),r=stats.byMode[config.mode],modeName=config.mode==='ojo'?'A OJO':'EL SABIONDO',dialog=document.querySelector('#rotationDialog');
+    document.querySelector('#rotationContent').innerHTML=`<p><b>${modeName} · ciclo ${r.cycle}</b></p><div class="stat-grid"><div class="stat"><small>DISPONIBLES EN EL CICLO</small><b>${r.availableThisCycle} / ${r.total}</b></div><div class="stat"><small>DISPONIBLES SIN REPETIR LAS 3 ÚLTIMAS</small><b>${r.availableWithoutRecent}</b></div><div class="stat"><small>IDS ÚNICOS USADOS · TODOS LOS MODOS</small><b>${stats.usedUnique} / ${BANK.length}</b></div><div class="stat"><small>REPETICIONES REGISTRADAS</small><b>${stats.repeatUses} (${stats.repeated.length} preguntas distintas)</b></div></div><h3>Últimas partidas</h3>${stats.history.length?`<ul class="answer-list">${stats.history.map(g=>`<li><span>${new Date(g.at).toLocaleDateString('es-ES')} · ${g.mode==='ojo'?'A OJO':'SABIONDO'} · ${g.count} preguntas</span><b>${g.repeatedIds.length} repes.</b></li>`).join('')}</ul>`:'<p class="explanation">Aún no hay partidas guardadas.</p>'}<h3>Preguntas que han reaparecido</h3>${stats.repeated.length?`<ul class="answer-list">${stats.repeated.slice(0,10).map(q=>`<li><span>${escapeHtml(q.question)}</span><b>${q.uses}×</b></li>`).join('')}</ul>`:'<p class="explanation">Todavía no hay repeticiones.</p>'}`;
+    dialog.showModal();
   }
   function start(){
     const existing=game&&!game.finished;
@@ -37,14 +46,10 @@
     if(new Set(unique).size!==unique.length){notice='Usad nombres distintos para reconocer el marcador.';drawSetup();return}
     const eligible=BANK.filter(q=>q.mode===config.mode&& (config.difficulty==='mixed'||q.difficulty===config.difficulty|| (config.difficulty==='expert'&&q.difficulty==='difficult')));
     if(eligible.length<config.count){notice=`Hay ${eligible.length} preguntas disponibles con esta combinación. Elegid otra dificultad o una partida más corta.`;drawSetup();return}
-    const questions=balancedShuffle(eligible).slice(0,config.count);
+    const selection=window.BravaRotation.select(eligible,config.count,config.mode,BANK.filter(q=>q.mode===config.mode));
     if(existing&&!confirm('¿Empezar una partida nueva? Se sustituirá la partida guardada.'))return;
-    game={players:names.map((name,i)=>({name,color:COLORS[i],score:0,answers:[],correct:0,streak:0,bestStreak:0,categoryWins:{}})),questions,mode:config.mode,round:0,turn:0,phase:'answer',pending:Array(names.length).fill(null),finished:false,created:Date.now()};save();notice='';renderGame();
-  }
-  function balancedShuffle(input){
-    const groups=new Map(); for(const q of input){if(!groups.has(q.category))groups.set(q.category,[]);groups.get(q.category).push(q)}
-    for(const a of groups.values())shuffle(a);const keys=[...groups.keys()];shuffle(keys);const out=[];
-    while(out.length<input.length){let moved=false;for(const k of keys){const a=groups.get(k);if(a.length){out.push(a.pop());moved=true}}if(!moved)break}return out;
+    window.BravaRotation.record(selection);
+    game={players:names.map((name,i)=>({name,color:COLORS[i],score:0,answers:[],correct:0,streak:0,bestStreak:0,categoryWins:{}})),questions:selection.questions,mode:config.mode,round:0,turn:0,phase:'answer',pending:Array(names.length).fill(null),finished:false,created:Date.now()};save();notice='';renderGame();
   }
   function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
   function current(){return game.questions[game.round]}

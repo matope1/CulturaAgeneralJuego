@@ -66,4 +66,11 @@
 .diverge-bar.left{grid-column:1;justify-self:end;border-radius:5px 0 0 5px}
 .diverge-bar.right{grid-column:3;justify-self:start;border-radius:0 5px 5px 0}
 .online-card [disabled]{opacity:.45;cursor:not-allowed}
+.rotation-tools{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:22px;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:#13140f}
+.rotation-tools>span{color:var(--muted);font-size:11px;line-height:1.5}
+.rotation-tools button{padding:10px 12px;font-size:11px}
+#rotationDialog{max-height:min(82vh,760px);overflow:auto}
+#rotationContent h3{margin:20px 0 8px;font-size:14px}
+#rotationContent .stat-grid{margin:14px 0}
+@media(max-width:520px){.rotation-tools{align-items:stretch;flex-direction:column}.rotation-tools>div{display:flex}.rotation-tools button{flex:1}}
 @media(max-width:620px){.online-card{padding:20px 16px;border-radius:19px}.online-columns{grid-template-columns:1fr;gap:10px}.online-panel{padding:17px}.room-code-display{padding:17px 13px;letter-spacing:4px}.online-progress{grid-template-columns:1fr}.diverge-chart{padding:10px}.diverge-row{grid-template-columns:minmax(54px,78px) minmax(0,1fr) minmax(32px,52px);gap:6px}.diverge-name,.diverge-value{font-size:10px}}
