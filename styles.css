@@ -23,6 +23,39 @@
 @keyframes reveal-in{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes podium-rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:420px){.topbar{height:64px;padding:0 14px}.top-right{gap:7px;letter-spacing:.4px}.shell{padding:20px 14px 42px}.setup,.game-card,.result-card{padding:17px 15px}.game-top{gap:8px}.game-top .eyebrow{font-size:9px;letter-spacing:1px}.game-top .meta{font-size:9px}.question{font-size:25px;letter-spacing:-.9px}.options{gap:8px}.option{padding:12px;font-size:13px;min-height:54px}.answer-list li{gap:8px;padding:11px 10px;font-size:12px}.answer-list li b{font-size:11px}.podium{gap:6px;margin:20px auto 24px}.podium-place{padding:12px 5px;min-height:100px}.podium-place.first{min-height:145px}.podium-place b{font-size:11px}.actions>*{flex:1}.mode-choice{padding:12px}.field-label{margin-top:19px}}
+
+/* Chat and quick reactions for online matches */
+#bravaSocial{position:fixed;z-index:50;inset:0;pointer-events:none;font-family:Manrope,system-ui,sans-serif}
+.brava-social-buttons{position:absolute;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));display:flex;gap:10px;pointer-events:auto}
+.brava-float-btn{position:relative;display:grid;place-items:center;width:54px;height:54px;border:1px solid #d4ff5570;border-radius:50%;background:var(--lime);color:#171910;box-shadow:0 8px 28px #0008;font-size:25px;font-weight:800;transition:transform .18s,box-shadow .18s}
+.brava-float-btn:hover{transform:translateY(-3px);box-shadow:0 12px 32px #0009}
+.brava-chat-toggle{font-size:21px}
+.brava-unread{position:absolute;top:-4px;right:-4px;display:grid;place-items:center;min-width:21px;height:21px;padding:0 5px;border:2px solid var(--bg);border-radius:20px;background:#ff755e;color:white;font-size:10px;animation:brava-pop .25s ease both}
+.brava-reaction-pop{position:absolute;right:18px;bottom:84px;display:grid;grid-template-columns:repeat(6,38px);gap:5px;padding:9px;border:1px solid var(--line);border-radius:15px;background:#191a16;box-shadow:0 12px 35px #0008;pointer-events:auto;animation:brava-pop .18s ease both}
+.brava-reaction-pop button,.brava-chat-emoji button{display:grid;place-items:center;min-width:38px;min-height:38px;padding:0;border:0;border-radius:9px;background:transparent;font-size:21px;cursor:pointer}
+.brava-reaction-pop button:hover,.brava-chat-emoji button:hover{background:#ffffff12;transform:scale(1.12)}
+.brava-chat-panel{position:absolute;right:20px;bottom:88px;display:flex;flex-direction:column;width:min(360px,calc(100vw - 32px));height:min(520px,calc(100dvh - 120px));border:1px solid var(--line);border-radius:19px;background:#191a16;box-shadow:0 18px 55px #000a;opacity:0;visibility:hidden;transform:translateY(12px) scale(.98);transition:opacity .2s,transform .2s,visibility .2s;pointer-events:auto;overflow:hidden}
+.brava-chat-panel.is-open{opacity:1;visibility:visible;transform:translateY(0) scale(1)}
+.brava-chat-panel>header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 16px;border-bottom:1px solid var(--line)}
+.brava-chat-panel>header b,.brava-chat-panel>header small{display:block}.brava-chat-panel>header b{font-size:14px}.brava-chat-panel>header small{margin-top:4px;color:var(--muted);font-size:10px}
+.brava-chat-panel>header button{width:38px;height:38px;border:0;border-radius:50%;background:var(--panel2);color:var(--ink);font-size:23px}
+.brava-chat-log{flex:1;min-height:0;overflow:auto;padding:12px;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#46473c transparent}
+.brava-chat-message{position:relative;width:fit-content;max-width:86%;margin:7px 0;padding:9px 11px 7px;border:1px solid #ffffff0d;border-radius:12px 12px 12px 4px;background:#24251f;overflow-wrap:anywhere;animation:brava-msg-in .2s ease both}
+.brava-chat-message.mine{margin-left:auto;border-color:#d4ff5535;border-radius:12px 12px 4px 12px;background:#d4ff5510}
+.brava-chat-message>b{color:var(--lime);font-size:10px}.brava-chat-message p{margin:3px 28px 3px 0;font-size:13px;line-height:1.4;white-space:pre-wrap}.brava-chat-message time{position:absolute;right:8px;bottom:7px;color:var(--muted);font-size:8px}
+.brava-chat-empty{padding:25px 12px;color:var(--muted);font-size:12px;text-align:center}
+.brava-chat-compose{padding:8px 10px max(10px,env(safe-area-inset-bottom));border-top:1px solid var(--line);background:#171814}
+.brava-chat-emoji{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}.brava-chat-emoji button{flex:0 0 34px;min-width:34px;min-height:34px;font-size:18px}
+.brava-chat-compose form{display:flex;gap:7px;margin-top:7px}.brava-chat-compose input{width:100%;min-width:0;height:44px;padding:0 12px;border:1px solid var(--line);border-radius:12px;background:#10110e;color:var(--ink);font-size:13px;outline:none}.brava-chat-compose input:focus{border-color:var(--lime)}.brava-chat-compose form>button{flex:0 0 44px;height:44px;border:0;border-radius:12px;background:var(--lime);color:#171910;font-size:23px;font-weight:800}
+#bravaFloats{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.brava-floating-reaction{position:absolute;left:var(--x);bottom:8%;display:flex;flex-direction:column;align-items:center;gap:3px;transform:translateX(-50%);animation:brava-float 2.8s ease-out forwards;text-shadow:0 2px 10px #000c}
+.brava-floating-reaction span{font-size:var(--size);transform:rotate(var(--tilt))}.brava-floating-reaction small{max-width:100px;color:white;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brava-chat-notice{position:absolute;right:18px;bottom:82px;padding:8px 11px;border:1px solid var(--line);border-radius:10px;background:#191a16;color:var(--ink);font-size:11px}
+@keyframes brava-pop{from{opacity:0;transform:scale(.85) translateY(5px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes brava-msg-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+@keyframes brava-float{0%{opacity:0;transform:translate(-50%,20px) rotate(var(--tilt))}12%{opacity:1}78%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + 10px),-70vh) rotate(calc(var(--tilt) + 14deg))}}
+@media(max-width:620px){.brava-social-buttons{right:max(14px,env(safe-area-inset-right));bottom:max(14px,env(safe-area-inset-bottom));gap:8px}.brava-float-btn{width:50px;height:50px}.brava-chat-panel{right:0;bottom:0;width:100%;height:min(78dvh,650px);border-radius:20px 20px 0 0;border-bottom:0;padding-bottom:env(safe-area-inset-bottom);transform:translateY(16px)}.brava-chat-panel.is-open{transform:translateY(0)}.brava-chat-panel>header{padding:12px 15px}.brava-reaction-pop{right:14px;bottom:72px;grid-template-columns:repeat(6,36px);gap:3px}}
+@media(prefers-reduced-motion:reduce){.brava-float-btn,.brava-chat-panel,.brava-chat-message,.brava-reaction-pop{animation:none!important;transition:none!important}.brava-floating-reaction{animation-duration:1ms!important}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 
 /* Online rooms */
@@ -74,3 +107,16 @@
 #rotationContent .stat-grid{margin:14px 0}
 @media(max-width:520px){.rotation-tools{align-items:stretch;flex-direction:column}.rotation-tools>div{display:flex}.rotation-tools button{flex:1}}
 @media(max-width:620px){.online-card{padding:20px 16px;border-radius:19px}.online-columns{grid-template-columns:1fr;gap:10px}.online-panel{padding:17px}.room-code-display{padding:17px 13px;letter-spacing:4px}.online-progress{grid-template-columns:1fr}.diverge-chart{padding:10px}.diverge-row{grid-template-columns:minmax(54px,78px) minmax(0,1fr) minmax(32px,52px);gap:6px}.diverge-name,.diverge-value{font-size:10px}}
+
+/* Per-question point winner feedback */
+.round-winner-banner{display:flex;align-items:center;gap:11px;margin:15px 0;padding:12px 15px;border:1px solid #d4ff5570;border-radius:13px;background:linear-gradient(100deg,#d4ff551b,#d4ff5506);box-shadow:0 0 24px #d4ff550b;animation:round-winner-in .38s cubic-bezier(.2,.8,.2,1) both}
+.round-winner-banner>span{font-size:25px;animation:trophy-pop .45s .08s both}.round-winner-banner>div{display:grid;gap:2px;min-width:0;flex:1}.round-winner-banner small{color:var(--lime);font:10px 'DM Mono',monospace;letter-spacing:1px}.round-winner-banner b{color:var(--ink);font-size:15px;line-height:1.3;overflow-wrap:anywhere}.round-winner-banner>i{display:grid;place-items:center;min-width:35px;height:30px;border:1px solid #d4ff5540;border-radius:10px;background:#d4ff5512;color:var(--lime);font-size:13px;font-style:normal;font-weight:800}
+.round-no-winner{margin:15px 0;padding:12px 15px;border:1px solid #ffffff20;border-radius:13px;background:#ffffff08;color:var(--ink);font-weight:800;animation:round-winner-in .35s ease both}
+.round-winner-row{box-shadow:inset 3px 0 var(--lime)}
+.diverge-winner{position:relative;padding:4px 6px;border:1px solid #d4ff5570;border-radius:9px;background:#d4ff550b;box-shadow:0 0 18px #d4ff550d}
+.diverge-winner .diverge-name{color:var(--lime);font-weight:800}.diverge-winner .diverge-bar{filter:brightness(1.2);box-shadow:0 0 8px color-mix(in srgb,var(--pc) 40%,transparent)}
+.diverge-value{display:block;min-width:0;text-align:right;font-size:11px;font-weight:800;overflow-wrap:anywhere}.diverge-value small{display:block;margin-top:2px;color:var(--muted);font-size:9px;font-weight:500;line-height:1.25}
+@keyframes round-winner-in{from{opacity:0;transform:translateY(7px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes trophy-pop{0%{transform:scale(.65) rotate(-10deg)}65%{transform:scale(1.14) rotate(4deg)}100%{transform:scale(1) rotate(0)}}
+@media(max-width:620px){.diverge-row{grid-template-columns:minmax(55px,70px) minmax(0,1fr) minmax(76px,96px);gap:5px}.diverge-winner{padding:4px 3px}.diverge-value{font-size:9px}.diverge-value small{font-size:8px}.round-winner-banner{padding:10px 12px}.round-winner-banner b{font-size:13px}}
+@media(prefers-reduced-motion:reduce){.round-winner-banner,.round-winner-banner>span,.round-no-winner{animation:none!important}}
