@@ -29,7 +29,13 @@
       ];
       let tierIndex=tiers.findIndex(t=>t.length);if(tierIndex<0)break;
       let candidates=tiers[tierIndex];
-      if(lastCategory!==null){
+      if(lastCategory!==null&&mode==='ojo'){
+        // Prefer a different category even if that means reaching for an older,
+        // non-recent question; only repeat a category when the pool has no alternative.
+        const categoryTierOrder=[0,2,1,3].filter(i=>i>=tierIndex&&tiers[i].some(q=>q.category!==lastCategory));
+        const categoryTier=categoryTierOrder[0];
+        if(categoryTier!==undefined){tierIndex=categoryTier;candidates=tiers[categoryTier].filter(q=>q.category!==lastCategory);}
+      }else if(lastCategory!==null){
         let other=candidates.filter(q=>q.category!==lastCategory);
         if(!other.length){const maxTier=tierIndex<2?1:3,next=tiers.findIndex((t,i)=>i>tierIndex&&i<=maxTier&&t.some(q=>q.category!==lastCategory));if(next>=0){tierIndex=next;candidates=tiers[next];other=candidates.filter(q=>q.category!==lastCategory);}}
         if(other.length)candidates=other;

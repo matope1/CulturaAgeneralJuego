@@ -3,6 +3,7 @@ const vm=require('node:vm');
 
 const bankWindow={};
 vm.runInNewContext(fs.readFileSync('questions.js','utf8'),{window:bankWindow});
+vm.runInNewContext(fs.readFileSync('questions-ojo-extra.js','utf8'),{window:bankWindow});
 const bank=bankWindow.QUESTION_BANK;
 const storage=new Map();
 const localStorage={getItem:key=>storage.has(key)?storage.get(key):null,setItem:(key,value)=>storage.set(key,String(value)),removeItem:key=>storage.delete(key)};
@@ -10,8 +11,9 @@ function freshRotation(){const window={localStorage};vm.runInNewContext(fs.readF
 function assert(condition,message){if(!condition)throw new Error(message);}
 
 for(const mode of ['mc','ojo']){
+  storage.clear();
   const eligible=bank.filter(q=>q.mode===mode),allIds=new Set(),played=[],duplicatesWithinLastThree=[];let withinGameDuplicates=0,adjacentCategoryPairs=0,adjacentDifficultyPairs=0;
-  for(let game=0;game<20;game++){
+  for(let game=0;game<50;game++){
     // Reinicia el contexto para simular que se cierra y vuelve a abrir la aplicación.
     const rotation=freshRotation(),selection=rotation.select(eligible,10,mode,eligible),ids=selection.questions.map(q=>q.id);
     assert(ids.length===10,`${mode}: partida ${game+1} no tiene 10 preguntas`);
@@ -25,6 +27,7 @@ for(const mode of ['mc','ojo']){
   }
   assert(withinGameDuplicates===0,`${mode}: hubo duplicados dentro de una partida`);
   assert(duplicatesWithinLastThree.length===0,`${mode}: se repitió antes de tres partidas: ${duplicatesWithinLastThree.join(',')}`);
+  assert(adjacentCategoryPairs===0,`${mode}: hubo categorías consecutivas cuando había alternativas`);
   const persistedStats=freshRotation().stats(bank);
   assert(persistedStats.repeatUses===played.flat().length-allIds.size,`${mode}: el contador de repeticiones no cuadra`);
   const summary={mode,partidas:played.length,preguntasJugadas:played.length*10,unicas:[...allIds].length,repeticiones:played.flat().length-allIds.size,duplicadosDentro:withinGameDuplicates,repetidasEnUltimasTres:duplicatesWithinLastThree.length,categoriasConsecutivas:adjacentCategoryPairs,dificultadesConsecutivas:adjacentDifficultyPairs};
